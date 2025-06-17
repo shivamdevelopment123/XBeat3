@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,28 +18,50 @@ class PlayerPage extends StatelessWidget {
     Widget _buildArt() {
       final seq = player.sequence;
       if (seq == null || audioProv.currentIndex >= seq.length) {
-        // placeholder
         return const SizedBox(
-          width: 250, height: 250,
+          width: 250,
+          height: 250,
           child: Icon(Icons.music_note, size: 100),
         );
       }
+
       final mediaItem = seq[audioProv.currentIndex].tag as MediaItem?;
       if (mediaItem?.artUri != null) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            mediaItem!.artUri.toString(),
-            width: 250, height: 250, fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 100),
-          ),
-        );
+        final uri = mediaItem!.artUri!;
+        if (uri.scheme == 'file') {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(
+              File(uri.toFilePath()),
+              width: 250,
+              height: 250,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+              const Icon(Icons.music_note, size: 100),
+            ),
+          );
+        } else if (uri.scheme == 'asset') {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              uri.path.replaceFirst('/', ''), // remove leading slash
+              width: 250,
+              height: 250,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+              const Icon(Icons.music_note, size: 100),
+            ),
+          );
+        }
       }
+
       return const SizedBox(
-        width: 250, height: 250,
+        width: 250,
+        height: 250,
         child: Icon(Icons.music_note, size: 100),
       );
     }
+
 
     return Scaffold(
       appBar: AppBar(
