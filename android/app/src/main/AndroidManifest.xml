@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 
@@ -36,14 +37,9 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name="com.ryanheise.just_audio_background.AudioService"
-            android:exported="true"
-            android:foregroundServiceType="mediaPlayback">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
+        <service android:name="com.ryanheise.just_audio_background.JustAudioBackgroundService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" />
 
         <service
             android:name="com.ryanheise.audioservice.AudioService"

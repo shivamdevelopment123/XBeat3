@@ -14,9 +14,11 @@ void main() async {
   await requestNotificationPermission();
   try {
     await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.example.audio.channel',
+      androidNotificationChannelId: 'com.sycodes.xbeat3.audio',
       androidNotificationChannelName: 'Audio Playback',
       androidNotificationOngoing: true,
+      androidShowNotificationBadge: true,
+      androidNotificationIcon: 'drawable/bingicon',
     );
     if (kDebugMode) {
       print("JustAudioBackground initialized");

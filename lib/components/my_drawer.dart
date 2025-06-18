@@ -29,6 +29,18 @@ class MyDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: ListTile(
+              leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.inversePrimary,),
+              title: Text('F A V O U R I T E S', style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),),
+              onTap: (){
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+              },
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ListTile(
               leading: Icon(Icons.settings, color: Theme.of(context).colorScheme.inversePrimary,),
               title: Text('S E T T I N G S', style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),),
               onTap: (){
@@ -36,7 +48,9 @@ class MyDrawer extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
               },
             ),
-          )
+          ),
+
+
         ],
       ),
     );
