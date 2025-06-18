@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xbeat3/pages/favourites_page.dart';
 
 import '../pages/settings_page.dart';
 
@@ -33,7 +34,7 @@ class MyDrawer extends StatelessWidget {
               title: Text('F A V O U R I T E S', style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary),),
               onTap: (){
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => FavouritesPage()));
               },
             ),
           ),
