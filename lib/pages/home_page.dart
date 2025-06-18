@@ -45,7 +45,10 @@ class HomePage extends StatelessWidget {
         return true;
       },
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          elevation: 0,
           title: Text(folderProv.currentPath ?? 'Home'),
           actions: [
             IconButton(
@@ -103,12 +106,9 @@ class HomePage extends StatelessWidget {
           leading: const Icon(Icons.music_note),
           title: Text(name),
           onTap: () async {
-            // 1️⃣ Build playlist from all audio files
             final uris = audioFiles.map((f) => f.path).toList();
-            await audioProv.setPlaylist(uris, startIndex: index);
-            // 2️⃣ Start playback
-            audioProv.play();
-            // 3️⃣ Navigate to full PlayerPage
+            audioProv.setPlaylist(uris, startIndex: index);
+
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PlayerPage()),

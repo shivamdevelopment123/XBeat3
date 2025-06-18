@@ -13,7 +13,6 @@ class NeuBox extends StatelessWidget{
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade500,
-            spreadRadius: 5,
             blurRadius: 7,
             offset: const Offset(4, 4),
           ),
@@ -25,7 +24,8 @@ class NeuBox extends StatelessWidget{
             offset: Offset(-4, -4),)
         ],
       ),
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.all(8),
+      child: child,
     );
   }
 
