@@ -79,46 +79,59 @@ class PlayerPage extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: NeuBox(
-                child: Column(
-                  children: [
-                    _buildArt(),
+              child: GestureDetector(
+                onHorizontalDragEnd: (details) {
+                  if (details.primaryVelocity! < 0) {
+                    if (audioProv.hasNext) {
+                      audioProv.skipToNext();
+                    }
+                  } else if (details.primaryVelocity! > 0) {
+                    if (audioProv.hasPrevious) {
+                      audioProv.skipToPrevious();
+                    }
+                  }
+                },
+                child: NeuBox(
+                  child: Column(
+                    children: [
+                      _buildArt(),
 
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                    Row(
-                      children: [
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 240),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (player.sequence != null && audioProv.currentIndex < player.sequence!.length) ...[
-                                Text(
-                                  (player.sequence![audioProv.currentIndex].tag as MediaItem).title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  (player.sequence![audioProv.currentIndex].tag as MediaItem).album ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                                ),
+                      Row(
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 240),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (player.sequence != null && audioProv.currentIndex < player.sequence!.length) ...[
+                                  Text(
+                                    (player.sequence![audioProv.currentIndex].tag as MediaItem).title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: false,
+                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    (player.sequence![audioProv.currentIndex].tag as MediaItem).album ?? '',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: false,
+                                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        Icon(Icons.favorite_border, color: Colors.red,)
-                      ]
-                    ),
-                    // Title & Artist
-                  ],
+                          const Spacer(),
+                          Icon(Icons.favorite_border, color: Colors.red,)
+                        ]
+                      ),
+                      // Title & Artist
+                    ],
+                  ),
                 ),
               ),
             ),
