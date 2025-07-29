@@ -12,15 +12,12 @@ class FavouriteProvider extends ChangeNotifier {
   }
 
   void _loadFromBox() {
-    // All keys are the file‑paths we stored
     _favs.addAll(_box.keys.cast<String>());
     notifyListeners();
   }
 
-  /// Returns true if this path is in favourites
   bool isFav(String path) => _favs.contains(path);
 
-  /// Toggle: add if missing, remove if present
   Future<void> toggle(String path) async {
     if (_favs.contains(path)) {
       await _box.delete(path);
@@ -32,6 +29,5 @@ class FavouriteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Optional: expose the list
   List<String> get allFavs => _favs.toList();
 }

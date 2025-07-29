@@ -46,6 +46,7 @@ dependencies:
   flutter_media_metadata: ^1.0.0+1
   audio_session: ^0.2.2
   hive_flutter: ^1.1.0
+  path: ^1.9.1
 
 
 
