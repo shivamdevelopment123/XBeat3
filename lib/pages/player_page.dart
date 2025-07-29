@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:xbeat3/components/neu_box.dart';
 import '../providers/audio_player_provider.dart';
+import '../providers/favourite_provider.dart';
 
 class PlayerPage extends StatelessWidget {
   const PlayerPage({super.key});
@@ -13,6 +14,10 @@ class PlayerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final audioProv = context.watch<AudioPlayerProvider>();
     final player    = audioProv.player;
+    final mediaItem = player.sequence[audioProv.currentIndex].tag as MediaItem;
+    final songPath = mediaItem.id;
+    final favProv = context.watch<FavouriteProvider>();
+    final isFav   = favProv.isFav(songPath);
 
     Widget _buildArt(){
       final seq = player.sequence;
@@ -105,9 +110,9 @@ class PlayerPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (player.sequence != null && audioProv.currentIndex < player.sequence!.length) ...[
+                                if (player.sequence != null && audioProv.currentIndex < player.sequence.length) ...[
                                   Text(
-                                    (player.sequence![audioProv.currentIndex].tag as MediaItem).title,
+                                    (player.sequence[audioProv.currentIndex].tag as MediaItem).title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
@@ -115,7 +120,7 @@ class PlayerPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    (player.sequence![audioProv.currentIndex].tag as MediaItem).album ?? '',
+                                    (player.sequence[audioProv.currentIndex].tag as MediaItem).album ?? '',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
@@ -126,7 +131,14 @@ class PlayerPage extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Icon(Icons.favorite_border, color: Colors.red,)
+                          IconButton(
+                            onPressed: () => favProv.toggle(songPath),
+                            icon: Icon(
+                              isFav ? Icons.favorite : Icons.favorite_border,
+                              color: Colors.red,
+                            ),
+                          ),
+                          //Icon(Icons.favorite_border, color: Colors.red,)
                         ]
                       ),
                       // Title & Artist

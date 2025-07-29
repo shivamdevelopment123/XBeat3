@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:xbeat3/pages/home_page.dart';
 import 'package:xbeat3/providers/audio_player_provider.dart';
+import 'package:xbeat3/providers/favourite_provider.dart';
 import 'package:xbeat3/providers/file_provider.dart';
 import 'package:xbeat3/providers/folder_provider.dart';
 import 'package:xbeat3/themes/theme_provider.dart';
@@ -11,7 +13,12 @@ import 'package:xbeat3/utils/permission_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox<String>('favourites');
   await requestNotificationPermission();
+
+
+
   try {
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.sycodes.xbeat3.audio',
@@ -36,7 +43,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => FolderProvider()),
         ChangeNotifierProvider(create: (_) => FileProvider()),
         ChangeNotifierProvider(create: (_) => AudioPlayerProvider()),
-
+        ChangeNotifierProvider(create: (_) => FavouriteProvider())
       ],
       child: const MyApp(),
     ),
