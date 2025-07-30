@@ -14,9 +14,9 @@ class FavouritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final favProv = context.watch<FavouriteProvider>();
-    final audioProv  = context.read<AudioPlayerProvider>();
-    final favPaths = favProv.allFavs;
+    final favProv   = context.watch<FavouriteProvider>();
+    final audioProv = context.read<AudioPlayerProvider>();
+    final favPaths  = favProv.allFavs;
 
     final favFiles = favPaths.map((path) {
       final name = p.basename(path);
@@ -44,17 +44,41 @@ class FavouritesPage extends StatelessWidget {
           : ListView.builder(
         itemCount: favFiles.length,
         itemBuilder: (context, index) {
-          final file = favFiles[index];
+          final file     = favFiles[index];
+          final songPath = file.path;
+
           return ListTile(
-            leading: const Icon(Icons.favorite),
+            leading: const Icon(Icons.favorite, color: Colors.red),
             title: Text(file.name),
-            onTap: () async {
+            onTap: () {
+              // Play from this index
               final uris = favFiles.map((f) => f.path).toList();
               audioProv.setPlaylist(uris, startIndex: index);
-
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const PlayerPage()),
+              );
+            },
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Remove Favourite'),
+                  content: Text('Remove "${file.name}" from your favourites?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        favProv.toggle(songPath);
+                        Navigator.pop(ctx);
+                      },
+                      child: const Text('Remove'),
+                    ),
+                  ],
+                ),
               );
             },
           );

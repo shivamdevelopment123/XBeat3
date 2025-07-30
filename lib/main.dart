@@ -17,8 +17,6 @@ void main() async {
   await Hive.openBox<String>('favourites');
   await requestNotificationPermission();
 
-
-
   try {
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.sycodes.xbeat3.audio',

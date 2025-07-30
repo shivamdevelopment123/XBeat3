@@ -14,49 +14,56 @@ class PlayerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final audioProv = context.watch<AudioPlayerProvider>();
     final player    = audioProv.player;
-    final mediaItem = player.sequence[audioProv.currentIndex].tag as MediaItem;
-    final songPath = mediaItem.id;
-    final favProv = context.watch<FavouriteProvider>();
-    final isFav   = favProv.isFav(songPath);
+    final seq       = player.sequence;
 
-    Widget _buildArt(){
-      final seq = player.sequence;
-      if (seq == null || audioProv.currentIndex >= seq.length) {
-        return const SizedBox(
-          width: double.infinity,
-          height: 240,
-          child: Icon(Icons.music_note, size: 100),
+    // ─────────────────────────────────────────────────────────────────────────────
+    // 1) Guard: if there's no sequence (or it's empty), show a loader/placeholder
+    if (seq == null || seq.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Now Playing'),
+          backgroundColor: Theme.of(context).colorScheme.background,
+          elevation: 0,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // 2) Safe to index now
+    final currentIndex = audioProv.currentIndex.clamp(0, seq.length - 1);
+    final mediaItem    = seq[currentIndex].tag as MediaItem;
+    final songPath     = mediaItem.id;
+    final favProv      = context.watch<FavouriteProvider>();
+    final isFav        = favProv.isFav(songPath);
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    Widget _buildArt() {
+      // We already know seq is non-null & non-empty
+      final item = seq[currentIndex].tag as MediaItem;
+      final uri  = item.artUri;
+
+      if (uri != null && uri.scheme == 'file') {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.file(
+            File(uri.toFilePath()),
+            width: double.infinity,
+            height: 240,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 100),
+          ),
         );
-      }
-
-      final mediaItem = seq[audioProv.currentIndex].tag as MediaItem?;
-      if (mediaItem?.artUri != null) {
-        final uri = mediaItem!.artUri!;
-        if (uri.scheme == 'file') {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(uri.toFilePath()),
-              width: double.infinity,
-              height: 240,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-              const Icon(Icons.music_note, size: 100),
-            ),
-          );
-        } else if (uri.scheme == 'asset') {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              uri.path.replaceFirst('/', ''),
-              width: double.infinity,
-              height: 240,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-              const Icon(Icons.music_note, size: 100),
-            ),
-          );
-        }
+      } else if (uri != null && uri.scheme == 'asset') {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            uri.path.replaceFirst('/', ''),
+            width: double.infinity,
+            height: 240,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 100),
+          ),
+        );
       }
 
       return const SizedBox(
