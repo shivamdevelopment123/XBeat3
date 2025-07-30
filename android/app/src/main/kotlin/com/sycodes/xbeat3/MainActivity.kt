@@ -10,26 +10,35 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugins.GeneratedPluginRegistrant
 import com.ryanheise.audioservice.AudioServiceActivity
 
-class MainActivity : AudioServiceActivity()
-{
+class MainActivity : AudioServiceActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-
-        // Create a high-importance notification channel for media playback
-        createHighImportanceChannel()
+        createQuietChannel()
     }
 
-    private fun createHighImportanceChannel() {
+    private fun createQuietChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId   = "com.sycodes.xbeat3.audio"
+            val channelName = "Audio Playback"
+
+            // IMPORTANCE_LOW = no sound, no vibration, but icon stays in status bar
             val channel = NotificationChannel(
-                "com.sycodes.xbeat3.audio",   // Channel ID
-                "Audio Playback",             // Channel Name
-                NotificationManager.IMPORTANCE_HIGH
-            )
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                // explicitly disable any sound or vibration
+                setSound(null, null)
+                enableVibration(false)
+                // keep it visible on lock screen if you like
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                // optional: disable badge
+                setShowBadge(false)
+            }
 
-            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC // ✅ FIXED
-
-            val manager = getSystemService(NotificationManager::class.java)
+            val manager = getSystemService(NotificationManager::class.java)!!
+            // Delete the old one so your new settings actually apply
+            manager.deleteNotificationChannel(channelId)
             manager.createNotificationChannel(channel)
         }
     }
