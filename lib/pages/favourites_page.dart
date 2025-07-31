@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:xbeat3/pages/player_page.dart';
@@ -49,8 +50,24 @@ class FavouritesPage extends StatelessWidget {
 
           return ListTile(
             leading: const Icon(Icons.favorite, color: Colors.red),
-            title: Text(file.name),
-            onTap: () {
+
+            title: SizedBox(
+            height: 20,    // or whatever height fits your text
+            child: Marquee(
+              text: file.name,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              scrollAxis: Axis.horizontal,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              blankSpace: 50,                   // gap between repeats
+              velocity: 30.0,                   // pixels per second
+              pauseAfterRound: Duration(seconds: 1),
+              startPadding: 10,                 // padding at the start
+              accelerationDuration: Duration(seconds: 1),
+              decelerationDuration: Duration(seconds: 1),
+            ),
+          ),
+
+          onTap: () {
               // Play from this index
               final uris = favFiles.map((f) => f.path).toList();
               audioProv.setPlaylist(uris, startIndex: index);

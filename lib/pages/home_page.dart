@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:xbeat3/components/my_drawer.dart';
 import 'package:xbeat3/pages/player_page.dart';
@@ -15,6 +16,9 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final folderProv = context.watch<FolderProvider>();
     final audioProv  = context.read<AudioPlayerProvider>();
+
+    final raw = folderProv.currentPath ?? '';
+    final display = raw.replaceFirst('/storage/emulated/0/', '');
 
     void _confirmRemove(BuildContext context, String path) {
       showDialog(
@@ -49,7 +53,7 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.background,
           elevation: 0,
-          title: Text(folderProv.currentPath ?? 'Home'),
+          title: Text(display.isEmpty ? 'Home' : display),
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
@@ -104,7 +108,22 @@ class HomePage extends StatelessWidget {
         final name = file.path.split('/').last;
         return ListTile(
           leading: const Icon(Icons.music_note),
-          title: Text(name),
+          //title: Text(name),
+            title: SizedBox(
+              height: 20,    // or whatever height fits your text
+              child: Marquee(
+                text: name,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                scrollAxis: Axis.horizontal,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                blankSpace: 50,                   // gap between repeats
+                velocity: 30.0,                   // pixels per second
+                pauseAfterRound: Duration(seconds: 7),
+                startPadding: 10,                 // padding at the start
+                accelerationDuration: Duration(seconds: 1),
+                decelerationDuration: Duration(seconds: 1),
+              ),
+            ),
           onTap: () async {
             final uris = audioFiles.map((f) => f.path).toList();
             audioProv.setPlaylist(uris, startIndex: index);

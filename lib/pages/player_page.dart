@@ -16,8 +16,6 @@ class PlayerPage extends StatelessWidget {
     final player    = audioProv.player;
     final seq       = player.sequence;
 
-    // ─────────────────────────────────────────────────────────────────────────────
-    // 1) Guard: if there's no sequence (or it's empty), show a loader/placeholder
     if (seq == null || seq.isEmpty) {
       return Scaffold(
         appBar: AppBar(
@@ -29,16 +27,13 @@ class PlayerPage extends StatelessWidget {
       );
     }
 
-    // 2) Safe to index now
     final currentIndex = audioProv.currentIndex.clamp(0, seq.length - 1);
     final mediaItem    = seq[currentIndex].tag as MediaItem;
     final songPath     = mediaItem.id;
     final favProv      = context.watch<FavouriteProvider>();
     final isFav        = favProv.isFav(songPath);
 
-    // ─────────────────────────────────────────────────────────────────────────────
     Widget _buildArt() {
-      // We already know seq is non-null & non-empty
       final item = seq[currentIndex].tag as MediaItem;
       final uri  = item.artUri;
 
@@ -238,7 +233,7 @@ class PlayerPage extends StatelessWidget {
                         child: Icon(
                           Icons.skip_previous,
                           size: 30,
-                          color: audioProv.hasPrevious ? Colors.black : Colors.grey,
+                          color: audioProv.hasPrevious ? Theme.of(context).colorScheme.inverseSurface : Colors.grey.shade600,
                         ),
                       ),
                     ),
@@ -276,7 +271,7 @@ class PlayerPage extends StatelessWidget {
                         child: Icon(
                           Icons.skip_next,
                           size: 30,
-                          color: audioProv.hasNext ? Colors.black : Colors.grey,
+                          color: audioProv.hasNext ? Theme.of(context).colorScheme.inverseSurface : Colors.grey.shade600,
                         ),
                       ),
                     ),
