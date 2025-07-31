@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:xbeat3/themes/light_mode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'dark_mode.dart';
+class ThemeProvider extends ChangeNotifier {
+  static const _key = 'theme_mode';
 
-class ThemeProvider extends ChangeNotifier{
-  ThemeData _themeData = lightMode;
-  ThemeData get themeData => _themeData;
+  final SharedPreferences _prefs;
+  ThemeMode _themeMode;
 
-  bool get isDarkMode => _themeData == darkMode;
+  ThemeMode get themeMode => _themeMode;
+  bool get isDarkMode   => _themeMode == ThemeMode.dark;
 
-  set themeData(ThemeData themeData){
-    _themeData = themeData;
+  ThemeProvider(this._prefs)
+      : _themeMode = ThemeMode.values[
+  _prefs.getInt(_key) ?? ThemeMode.system.index
+  ];
+
+  void setThemeMode(ThemeMode mode) {
+    _themeMode = mode;
+    _prefs.setInt(_key, mode.index);
     notifyListeners();
-  }
-
-  void toggleTheme(){
-    if(_themeData == lightMode){
-      _themeData = darkMode;
-    }else{
-      _themeData = lightMode;
-    }
-    notifyListeners();
-
   }
 }

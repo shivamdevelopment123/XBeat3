@@ -8,31 +8,66 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ThemeProvider>(context);
+    final current = provider.themeMode;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: const Text('S E T T I N G S'),
+        title: const Text('Settings'),
         centerTitle: true,
       ),
       body: Container(
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondary,
-        borderRadius: BorderRadius.circular(10)),
-        padding: EdgeInsets.all(14),
-        margin: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        margin: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Text("Dark Mode", style: TextStyle(color: Theme.of(context).colorScheme.inversePrimary, fontSize: 18, fontWeight: FontWeight.bold)),
-
-            Spacer(),
-
-            CupertinoSwitch(
-              value: Provider.of<ThemeProvider>(context).isDarkMode,
-              onChanged: (value) => Provider.of<ThemeProvider>(context, listen: false)
-                  .toggleTheme(),
+            Text(
+              'Select Theme:',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            DropdownButton<ThemeMode>(
+              value: current,
+              dropdownColor: Theme.of(context).colorScheme.secondary,
+              iconEnabledColor: Theme.of(context).colorScheme.inversePrimary,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontSize: 16,
+              ),
+              underline: const SizedBox(),
+              items: const [
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text('System Default'),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.light,
+                  child: Text('Light Mode'),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.dark,
+                  child: Text('Dark Mode'),
+                ),
+              ],
+              onChanged: (mode) {
+                if (mode != null) {
+                  provider.setThemeMode(mode);
+                }
+              },
             ),
           ],
         ),
-      )
+      ),
     );
   }
 }
+

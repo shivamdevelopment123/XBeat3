@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xbeat3/pages/home_page.dart';
 import 'package:xbeat3/providers/audio_player_provider.dart';
 import 'package:xbeat3/providers/equalizer_provider.dart';
 import 'package:xbeat3/providers/favourite_provider.dart';
 import 'package:xbeat3/providers/file_provider.dart';
 import 'package:xbeat3/providers/folder_provider.dart';
+import 'package:xbeat3/themes/dark_mode.dart';
+import 'package:xbeat3/themes/light_mode.dart';
 import 'package:xbeat3/themes/theme_provider.dart';
 import 'package:xbeat3/utils/permission_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
   await Hive.initFlutter();
   await Hive.openBox<String>('favourites');
   await requestNotificationPermission();
@@ -38,7 +42,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)),
         ChangeNotifierProvider(create: (_) => FolderProvider()),
         ChangeNotifierProvider(create: (_) => FileProvider()),
         ChangeNotifierProvider(create: (_) => AudioPlayerProvider()),
@@ -60,7 +64,9 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'An Audio Player',
-          theme: themeProvider.themeData,
+          theme: lightMode,
+          darkTheme: darkMode,
+          themeMode: themeProvider.themeMode,
           home: const PermissionsGate(),
         );
       },

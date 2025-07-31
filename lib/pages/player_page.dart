@@ -15,13 +15,13 @@ class PlayerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioProv = context.watch<AudioPlayerProvider>();
-    final player    = audioProv.player;
-    final seq       = player.sequence;
+    final player = audioProv.player;
+    final seq = player.sequence;
 
     if (seq == null || seq.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-        title: const Text('N O W     P L A Y I N G'),
+          title: const Text('N O W     P L A Y I N G'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.background,
           elevation: 0,
@@ -31,14 +31,14 @@ class PlayerPage extends StatelessWidget {
     }
 
     final currentIndex = audioProv.currentIndex.clamp(0, seq.length - 1);
-    final mediaItem    = seq[currentIndex].tag as MediaItem;
-    final songPath     = mediaItem.id;
-    final favProv      = context.watch<FavouriteProvider>();
-    final isFav        = favProv.isFav(songPath);
+    final mediaItem = seq[currentIndex].tag as MediaItem;
+    final songPath = mediaItem.id;
+    final favProv = context.watch<FavouriteProvider>();
+    final isFav = favProv.isFav(songPath);
 
     Widget _buildArt() {
       final item = seq[currentIndex].tag as MediaItem;
-      final uri  = item.artUri;
+      final uri = item.artUri;
 
       if (uri != null && uri.scheme == 'file') {
         return ClipRRect(
@@ -48,7 +48,8 @@ class PlayerPage extends StatelessWidget {
             width: double.infinity,
             height: 240,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 100),
+            errorBuilder: (_, __, ___) =>
+                const Icon(Icons.music_note, size: 100),
           ),
         );
       } else if (uri != null && uri.scheme == 'asset') {
@@ -59,7 +60,8 @@ class PlayerPage extends StatelessWidget {
             width: double.infinity,
             height: 240,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 100),
+            errorBuilder: (_, __, ___) =>
+                const Icon(Icons.music_note, size: 100),
           ),
         );
       }
@@ -79,9 +81,7 @@ class PlayerPage extends StatelessWidget {
         leading: BackButton(onPressed: () => Navigator.pop(context)),
         title: const Text('N O W      P L A Y I N G'),
         centerTitle: true,
-        actions: [
-
-        ],
+        actions: [],
       ),
       body: SafeArea(
         child: Column(
@@ -116,21 +116,34 @@ class PlayerPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (player.sequence != null && audioProv.currentIndex < player.sequence.length) ...[
+                                if (player.sequence != null &&
+                                    audioProv.currentIndex <
+                                        player.sequence.length) ...[
                                   Text(
-                                    (player.sequence[audioProv.currentIndex].tag as MediaItem).title,
+                                    (player.sequence[audioProv.currentIndex].tag
+                                            as MediaItem)
+                                        .title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, ),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    (player.sequence[audioProv.currentIndex].tag as MediaItem).album ?? '',
+                                    (player.sequence[audioProv.currentIndex].tag
+                                                as MediaItem)
+                                            .album ??
+                                        '',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     softWrap: false,
-                                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ],
                               ],
@@ -144,7 +157,7 @@ class PlayerPage extends StatelessWidget {
                               color: Colors.red,
                             ),
                           ),
-                        ]
+                        ],
                       ),
                       // Title & Artist
                     ],
@@ -153,7 +166,7 @@ class PlayerPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 15,),
+            const SizedBox(height: 15),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -162,7 +175,9 @@ class PlayerPage extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: Icon(
-                      audioProv.shuffle ? Icons.shuffle_outlined : Icons.shuffle_on_outlined,
+                      audioProv.shuffle
+                          ? Icons.shuffle_outlined
+                          : Icons.shuffle_on_outlined,
                     ),
                     onPressed: () => audioProv.toggleShuffle(),
                   ),
@@ -177,23 +192,25 @@ class PlayerPage extends StatelessWidget {
                     onPressed: () => audioProv.cycleRepeatMode(),
                   ),
                   IconButton(
-                      onPressed: (){
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(16),
                           ),
-                          builder: (_) => const EqualizerBottomSheet(),
-                        );
-                      },
-                      icon: Icon(Icons.equalizer_outlined))
+                        ),
+                        builder: (_) => const EqualizerBottomSheet(),
+                      );
+                    },
+                    icon: Icon(Icons.equalizer_outlined),
+                  ),
                 ],
               ),
             ),
 
-
-            const SizedBox(height: 0,),
+            const SizedBox(height: 0),
 
             // Seek bar + times
             StreamBuilder<Duration>(
@@ -204,14 +221,19 @@ class PlayerPage extends StatelessWidget {
                 return Column(
                   children: [
                     SliderTheme(
-                      data : SliderTheme.of(context).copyWith(
-                        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0),
+                      data: SliderTheme.of(context).copyWith(
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 0,
+                        ),
                       ),
                       child: Slider(
                         min: 0,
                         max: dur.inMilliseconds.toDouble(),
-                        value: pos.inMilliseconds.clamp(0, dur.inMilliseconds).toDouble(),
-                        onChanged: (ms) => player.seek(Duration(milliseconds: ms.round())),
+                        value: pos.inMilliseconds
+                            .clamp(0, dur.inMilliseconds)
+                            .toDouble(),
+                        onChanged: (ms) =>
+                            player.seek(Duration(milliseconds: ms.round())),
                         activeColor: Colors.red,
                       ),
                     ),
@@ -230,61 +252,61 @@ class PlayerPage extends StatelessWidget {
               },
             ),
 
-            const SizedBox(height: 15,),
+            const SizedBox(height: 15),
 
             MainPlayControls(),
 
-            const SizedBox(height: 10,),
+            const SizedBox(height: 10),
 
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: StreamBuilder<SequenceState?>(
-              stream: audioProv.player.sequenceStateStream,
-              builder: (context, snapshot) {
-                final seq = snapshot.data?.sequence;
-                final currentIndex = audioProv.currentIndex;
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: StreamBuilder<SequenceState?>(
+                  stream: audioProv.player.sequenceStateStream,
+                  builder: (context, snapshot) {
+                    final seq = snapshot.data?.sequence;
+                    final currentIndex = audioProv.currentIndex;
 
-                if (seq == null || currentIndex >= seq.length - 1) {
-                  return const Center(
-                    child: Text(
-                      "No upcoming songs in queue.",
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  );
-                }
+                    if (seq == null || currentIndex >= seq.length - 1) {
+                      return const Center(
+                        child: Text(
+                          "No upcoming songs in queue.",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      );
+                    }
 
-                final nextSongs = seq.sublist(currentIndex + 1);
+                    final nextSongs = seq.sublist(currentIndex + 1);
 
-                return ListView.separated(
-                  itemCount: nextSongs.length,
-                  separatorBuilder: (_, __) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final mediaItem = nextSongs[index].tag as MediaItem;
-                    final actualIndex = currentIndex + 1 + index;
+                    return ListView.separated(
+                      itemCount: nextSongs.length,
+                      separatorBuilder: (_, __) => const Divider(),
+                      itemBuilder: (context, index) {
+                        final mediaItem = nextSongs[index].tag as MediaItem;
+                        final actualIndex = currentIndex + 1 + index;
 
-                    return ListTile(
-                      leading: const Icon(Icons.music_note),
-                      title: Text(
-                        mediaItem.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        mediaItem.album ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () {
-                        audioProv.skipToQueueItem(actualIndex);
+                        return ListTile(
+                          leading: const Icon(Icons.music_note),
+                          title: Text(
+                            mediaItem.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            mediaItem.album ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () {
+                            audioProv.skipToQueueItem(actualIndex);
+                          },
+                        );
                       },
                     );
                   },
-                );
-              },
+                ),
+              ),
             ),
-          ),
-        ),
           ],
         ),
       ),
