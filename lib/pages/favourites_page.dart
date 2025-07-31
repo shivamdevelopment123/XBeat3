@@ -5,7 +5,7 @@ import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:xbeat3/pages/player_page.dart';
-import '../components/file_tile.dart';
+import '../components/mini_player_bar.dart';
 import '../models/audio_file.dart';
 import '../providers/audio_player_provider.dart';
 import '../providers/favourite_provider.dart';
@@ -68,7 +68,6 @@ class FavouritesPage extends StatelessWidget {
           ),
 
           onTap: () {
-              // Play from this index
               final uris = favFiles.map((f) => f.path).toList();
               audioProv.setPlaylist(uris, startIndex: index);
               Navigator.push(
@@ -101,6 +100,8 @@ class FavouritesPage extends StatelessWidget {
           );
         },
       ),
+
+      bottomNavigationBar: SafeArea(child: const MiniPlayerBar()),
     );
   }
 }

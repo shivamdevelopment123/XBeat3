@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:xbeat3/components/neu_box.dart';
 import 'package:xbeat3/widgets/main_play_controls.dart';
+import 'package:xbeat3/widgets/songs_queue_list.dart';
 import '../components/equalizer_bottom_sheet.dart';
 import '../providers/audio_player_provider.dart';
 import '../providers/favourite_provider.dart';
@@ -196,6 +197,7 @@ class PlayerPage extends StatelessWidget {
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
+                        backgroundColor: Theme.of(context).colorScheme.background,
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(16),
@@ -256,57 +258,10 @@ class PlayerPage extends StatelessWidget {
 
             MainPlayControls(),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 7),
 
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: StreamBuilder<SequenceState?>(
-                  stream: audioProv.player.sequenceStateStream,
-                  builder: (context, snapshot) {
-                    final seq = snapshot.data?.sequence;
-                    final currentIndex = audioProv.currentIndex;
+            SongsQueueList(),
 
-                    if (seq == null || currentIndex >= seq.length - 1) {
-                      return const Center(
-                        child: Text(
-                          "No upcoming songs in queue.",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      );
-                    }
-
-                    final nextSongs = seq.sublist(currentIndex + 1);
-
-                    return ListView.separated(
-                      itemCount: nextSongs.length,
-                      separatorBuilder: (_, __) => const Divider(),
-                      itemBuilder: (context, index) {
-                        final mediaItem = nextSongs[index].tag as MediaItem;
-                        final actualIndex = currentIndex + 1 + index;
-
-                        return ListTile(
-                          leading: const Icon(Icons.music_note),
-                          title: Text(
-                            mediaItem.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            mediaItem.album ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () {
-                            audioProv.skipToQueueItem(actualIndex);
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
           ],
         ),
       ),

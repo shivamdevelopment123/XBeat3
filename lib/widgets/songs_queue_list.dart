@@ -1,0 +1,65 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/audio_player_provider.dart';
+
+class SongsQueueList extends StatelessWidget {
+  const SongsQueueList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final audioProv = context.watch<AudioPlayerProvider>();
+
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: StreamBuilder<SequenceState?>(
+          stream: audioProv.player.sequenceStateStream,
+          builder: (context, snapshot) {
+            final seq = snapshot.data?.sequence;
+            final currentIndex = audioProv.currentIndex;
+
+            if (seq == null || currentIndex >= seq.length - 1) {
+              return const Center(
+                child: Text(
+                  "No upcoming songs in queue.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              );
+            }
+
+            final nextSongs = seq.sublist(currentIndex + 1);
+
+            return ListView.separated(
+              itemCount: nextSongs.length,
+              separatorBuilder: (_, __) => const Divider(),
+              itemBuilder: (context, index) {
+                final mediaItem = nextSongs[index].tag as MediaItem;
+                final actualIndex = currentIndex + 1 + index;
+
+                return ListTile(
+                  leading: const Icon(Icons.music_note),
+                  title: Text(
+                    mediaItem.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    mediaItem.album ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () {
+                    audioProv.skipToQueueItem(actualIndex);
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
