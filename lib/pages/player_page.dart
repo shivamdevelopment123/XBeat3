@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:xbeat3/components/neu_box.dart';
+import 'package:xbeat3/widgets/main_play_controls.dart';
+import '../components/equalizer_bottom_sheet.dart';
 import '../providers/audio_player_provider.dart';
 import '../providers/favourite_provider.dart';
 
@@ -19,7 +21,8 @@ class PlayerPage extends StatelessWidget {
     if (seq == null || seq.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Now Playing'),
+        title: const Text('N O W     P L A Y I N G'),
+          centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.background,
           elevation: 0,
         ),
@@ -74,7 +77,8 @@ class PlayerPage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         elevation: 0,
         leading: BackButton(onPressed: () => Navigator.pop(context)),
-        title: const Text('Now Playing'),
+        title: const Text('N O W      P L A Y I N G'),
+        centerTitle: true,
         actions: [
 
         ],
@@ -140,7 +144,6 @@ class PlayerPage extends StatelessWidget {
                               color: Colors.red,
                             ),
                           ),
-                          //Icon(Icons.favorite_border, color: Colors.red,)
                         ]
                       ),
                       // Title & Artist
@@ -174,7 +177,16 @@ class PlayerPage extends StatelessWidget {
                     onPressed: () => audioProv.cycleRepeatMode(),
                   ),
                   IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (_) => const EqualizerBottomSheet(),
+                        );
+                      },
                       icon: Icon(Icons.equalizer_outlined))
                 ],
               ),
@@ -220,65 +232,7 @@ class PlayerPage extends StatelessWidget {
 
             const SizedBox(height: 15,),
 
-            // Playback controls
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  // Previous
-                  Expanded(
-                    child: NeuBox(
-                      child: GestureDetector(
-                        onTap: audioProv.hasPrevious ? () => audioProv.skipToPrevious() : null,
-                        child: Icon(
-                          Icons.skip_previous,
-                          size: 30,
-                          color: audioProv.hasPrevious ? Theme.of(context).colorScheme.inverseSurface : Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 15,),
-
-                  // Play/Pause
-                  Expanded(
-                    child: StreamBuilder<bool>(
-                      stream: player.playingStream,
-                      initialData: player.playing,
-                      builder: (context, snap) {
-                        final playing = snap.data!;
-                        return NeuBox(
-                          child: GestureDetector(
-                            onTap: () => playing ? audioProv.pause() : audioProv.play(),
-                            child: Icon(
-                              playing ? Icons.pause : Icons.play_arrow,
-                              size: 30,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(width: 15,),
-
-                  // Next
-                  Expanded(
-                    child: NeuBox(
-                      child: GestureDetector(
-                        onTap: audioProv.hasNext ? () => audioProv.skipToNext() : null,
-                        child: Icon(
-                          Icons.skip_next,
-                          size: 30,
-                          color: audioProv.hasNext ? Theme.of(context).colorScheme.inverseSurface : Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            MainPlayControls(),
 
             const SizedBox(height: 10,),
 

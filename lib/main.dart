@@ -5,6 +5,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:xbeat3/pages/home_page.dart';
 import 'package:xbeat3/providers/audio_player_provider.dart';
+import 'package:xbeat3/providers/equalizer_provider.dart';
 import 'package:xbeat3/providers/favourite_provider.dart';
 import 'package:xbeat3/providers/file_provider.dart';
 import 'package:xbeat3/providers/folder_provider.dart';
@@ -41,7 +42,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => FolderProvider()),
         ChangeNotifierProvider(create: (_) => FileProvider()),
         ChangeNotifierProvider(create: (_) => AudioPlayerProvider()),
-        ChangeNotifierProvider(create: (_) => FavouriteProvider())
+        ChangeNotifierProvider(create: (_) => FavouriteProvider()),
+        ChangeNotifierProvider(create: (_) => EqualizerProvider()),
       ],
       child: const MyApp(),
     ),
