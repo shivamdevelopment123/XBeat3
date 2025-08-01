@@ -38,43 +38,6 @@ class PlayerPage extends StatelessWidget {
     final favProv = context.watch<FavouriteProvider>();
     final isFav = favProv.isFav(songPath);
 
-    /*Widget _buildArt() {
-      final item = seq[currentIndex].tag as MediaItem;
-      final uri = item.artUri;
-
-      if (uri != null && uri.scheme == 'file') {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.file(
-            File(uri.toFilePath()),
-            width: double.infinity,
-            height: 240,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) =>
-                const Icon(Icons.music_note, size: 100),
-          ),
-        );
-      } else if (uri != null && uri.scheme == 'asset') {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            uri.path.replaceFirst('/', ''),
-            width: double.infinity,
-            height: 240,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) =>
-                const Icon(Icons.music_note, size: 100),
-          ),
-        );
-      }
-
-      return const SizedBox(
-        width: double.infinity,
-        height: 240,
-        child: Icon(Icons.music_note, size: 100),
-      );
-    }*/
-
     Widget _buildArtWithInfo() {
       final item = seq[currentIndex].tag as MediaItem;
       final uri = item.artUri;

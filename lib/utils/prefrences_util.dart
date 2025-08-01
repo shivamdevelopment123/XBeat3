@@ -24,25 +24,4 @@ class PrefsUtils {
     return prefs.getString('last_played_song');
   }
 
-  static Future<void> saveThemeMode(ThemeMode mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('theme_mode', mode.index);
-  }
-
-  static Future<ThemeMode> getThemeMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    final index = prefs.getInt('theme_mode') ?? 0;
-    return ThemeMode.values[index];
-  }
-
-  static Future<void> saveEqualizerMode(int mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('equalizer_mode', mode);
-  }
-
-  static Future<int> getEqualizerMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('equalizer_mode') ?? 0;
-  }
-
 }

@@ -1,4 +1,3 @@
-// lib/widgets/equalizer_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/equalizer_provider.dart';
@@ -11,6 +10,8 @@ class EqualizerBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final eqProv = context.watch<EqualizerProvider>();
     final audioProv = context.read<AudioPlayerProvider>();
+    final builtins = eqProv.builtInPresets;
+    final users = eqProv.userPresetNames;
 
     return SafeArea(
       child: Padding(
@@ -18,60 +19,164 @@ class EqualizerBottomSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Preset dropdown
+            // Preset selector row
             Row(
               children: [
                 const Text('Preset:', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(width: 12),
-                DropdownButton<String>(
-                  value: eqProv.selectedPreset,
-                  items: EqualizerProvider.presets.keys
-                      .map((name) => DropdownMenuItem(
-                    value: name,
-                    child: Text(name),
-                  ))
-                      .toList(),
-                  onChanged: (v) {
-                    if (v != null) {
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: eqProv.selectedPreset,
+                    items: [
+                      // Built-in
+                      ...builtins.map((n) => DropdownMenuItem(value: n, child: Text(n))),
+                      if (users.isNotEmpty) const DropdownMenuItem(enabled: false, child: Divider()),
+                      // User
+                      ...users.map((n) => DropdownMenuItem(value: n, child: Text(n))),
+                      const DropdownMenuItem(enabled: false, child: Divider()),
+                      // Custom fallback
+                      const DropdownMenuItem(value: 'Custom', child: Text('Custom')),
+                    ],
+                    onChanged: (v) {
+                      if (v == null || v == 'Custom') return;
                       eqProv.applyPreset(v);
-                      audioProv.setEqualizer(eqProv.gains);
-                    }
-                  },
+                      audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                    },
+                  ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
+                if (eqProv.selectedPreset == 'Custom')
+                  IconButton(
+                    icon: const Icon(Icons.save),
+                    tooltip: 'Save Preset',
+                    onPressed: () async {
+                      final name = await showDialog<String>(
+                        context: context,
+                        builder: (ctx) {
+                          String temp = '';
+                          return AlertDialog(
+                            title: const Text('Save Custom Preset'),
+                            content: TextField(
+                              decoration: const InputDecoration(labelText: 'Preset Name'),
+                              onChanged: (v) => temp = v.trim(),
+                            ),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                              TextButton(onPressed: () => Navigator.pop(ctx, temp), child: const Text('Save')),
+                            ],
+                          );
+                        },
+                      );
+                      if (name?.isNotEmpty ?? false) {
+                        await eqProv.saveUserPreset(name!);
+                        audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                      }
+                    },
+                  ),
+                if (users.contains(eqProv.selectedPreset))
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    tooltip: 'Delete Preset',
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Preset'),
+                          content: Text('Delete "\${eqProv.selectedPreset}"?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        await eqProv.deleteUserPreset(eqProv.selectedPreset);
+                        audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                      }
+                    },
+                  ),
                 TextButton(
                   onPressed: () {
                     eqProv.reset();
-                    audioProv.setEqualizer(eqProv.gains);
+                    audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
                   },
                   child: const Text('Reset'),
-                )
+                ),
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-            // One slider per band
-            ...EqualizerProvider.bands.map((freq) {
-              final gain = eqProv.gains[freq]!;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('$freq Hz (${gain.toStringAsFixed(1)} dB)'),
-                  Slider(
-                    min: -12,
-                    max: 12,
-                    divisions: 48,
-                    value: gain,
-                    onChanged: (v) {
-                      eqProv.setGain(freq, v);
-                      audioProv.setEqualizer(eqProv.gains);
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              );
-            }).toList(),
+            // Sliders for each band
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: EqualizerProvider.bands.map((freq) {
+                final gain = eqProv.gains[freq]!;
+                final q = eqProv.qFactors[freq]!;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Gain display
+                    Text('${gain.toStringAsFixed(1)} dB', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    // Gain slider
+                    SizedBox(
+                      width: 40,
+                      height: 200,
+                      child: RotatedBox(
+                        quarterTurns: -1,
+                        child: Slider(
+                          min: -12,
+                          max: 12,
+                          divisions: 48,
+                          value: gain,
+                          onChanged: (v) {
+                            eqProv.setGain(freq, v);
+                            audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    // Q display
+                    Text('Q ${q.toStringAsFixed(1)}', style: const TextStyle(fontSize: 10)),
+                    const SizedBox(height: 6),
+                    // Q slider
+                    SizedBox(
+                      width: 30,
+                      height: 100,
+                      child: RotatedBox(
+                        quarterTurns: -1,
+                        child: Slider(
+                          min: 0.5,
+                          max: 5.0,
+                          divisions: 45,
+                          value: q,
+                          onChanged: (v) {
+                            eqProv.setQ(freq, v);
+                            audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Label
+                    SizedBox(
+                      height: 50,
+                      child: RotatedBox(
+                        quarterTurns: 1,
+                        child: Text(
+                          EqualizerProvider.bandLabels[freq]!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
           ],
         ),
       ),
