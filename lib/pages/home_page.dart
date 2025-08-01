@@ -52,7 +52,7 @@ class HomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.background,
-          elevation: 0,
+          elevation: 1,
           title: Text(display.isEmpty ? 'Home' : display),
           actions: [
             IconButton(

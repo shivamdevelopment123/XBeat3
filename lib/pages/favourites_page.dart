@@ -32,6 +32,7 @@ class FavouritesPage extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
+        elevation: 1,
         title: const Text('F A V O U R I T E S'),
         centerTitle: true,
       ),

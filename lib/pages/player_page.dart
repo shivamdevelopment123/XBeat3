@@ -9,6 +9,7 @@ import 'package:xbeat3/widgets/songs_queue_list.dart';
 import '../components/equalizer_bottom_sheet.dart';
 import '../providers/audio_player_provider.dart';
 import '../providers/favourite_provider.dart';
+import '../widgets/song_info_sheet.dart';
 
 class PlayerPage extends StatelessWidget {
   const PlayerPage({super.key});
@@ -37,7 +38,7 @@ class PlayerPage extends StatelessWidget {
     final favProv = context.watch<FavouriteProvider>();
     final isFav = favProv.isFav(songPath);
 
-    Widget _buildArt() {
+    /*Widget _buildArt() {
       final item = seq[currentIndex].tag as MediaItem;
       final uri = item.artUri;
 
@@ -71,6 +72,58 @@ class PlayerPage extends StatelessWidget {
         width: double.infinity,
         height: 240,
         child: Icon(Icons.music_note, size: 100),
+      );
+    }*/
+
+    Widget _buildArtWithInfo() {
+      final item = seq[currentIndex].tag as MediaItem;
+      final uri = item.artUri;
+      final songPath = item.id;
+
+      Widget imageWidget;
+      if (uri != null && uri.scheme == 'file') {
+        imageWidget = Image.file(File(uri.toFilePath()), fit: BoxFit.cover);
+      } else if (uri != null && uri.scheme == 'asset') {
+        imageWidget = Image.asset(uri.path.replaceFirst('/', ''), fit: BoxFit.cover);
+      } else {
+        imageWidget = const Icon(Icons.music_note, size: 100);
+      }
+
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Stack(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              height: 240,
+              child: imageWidget,
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Material(
+                color: Colors.black38,
+                shape: const CircleBorder(),
+                child: IconButton(
+                  icon: const Icon(Icons.info, color: Colors.white),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      backgroundColor: Theme.of(context).colorScheme.background,
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => SongInfoSheet(
+                        songPath: songPath,
+                        title: item.title,
+                        album: item.album ?? '',
+                        artist: item.artist ?? '',
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -106,7 +159,8 @@ class PlayerPage extends StatelessWidget {
                 child: NeuBox(
                   child: Column(
                     children: [
-                      _buildArt(),
+                      //_buildArt(),
+                      _buildArtWithInfo(),
 
                       const SizedBox(height: 10),
 

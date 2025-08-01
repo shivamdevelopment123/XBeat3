@@ -31,7 +31,7 @@ class MiniPlayerBar extends StatelessWidget {
       child: NeuBox(
         child: Container(
           color: Theme.of(context).colorScheme.background,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
           child: Row(
             children: [
               // Track title

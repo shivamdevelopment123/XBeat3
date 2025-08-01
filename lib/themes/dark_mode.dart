@@ -9,6 +9,6 @@ ThemeData darkMode = ThemeData(
         inverseSurface: Colors.white
     ),
     shadowColor: Colors.grey.shade800,           // bottom-right
-    highlightColor: Colors.black54,
+    highlightColor: Colors.black87,
 
 );

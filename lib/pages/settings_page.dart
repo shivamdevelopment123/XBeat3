@@ -13,7 +13,8 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('S E T T I N G S'),
+        elevation: 1,
         centerTitle: true,
       ),
       body: Container(

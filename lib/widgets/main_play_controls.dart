@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../components/neu_box.dart';
 import '../providers/audio_player_provider.dart';
 
@@ -18,9 +17,9 @@ class MainPlayControls extends StatelessWidget {
         children: [
           // Previous
           Expanded(
-            child: NeuBox(
-              child: GestureDetector(
-                onTap: audioProv.hasPrevious ? () => audioProv.skipToPrevious() : null,
+            child: GestureDetector(
+              onTap: audioProv.hasPrevious ? () => audioProv.skipToPrevious() : null,
+              child: NeuBox(
                 child: Icon(
                   Icons.skip_previous,
                   size: 30,
@@ -39,9 +38,9 @@ class MainPlayControls extends StatelessWidget {
               initialData: player.playing,
               builder: (context, snap) {
                 final playing = snap.data!;
-                return NeuBox(
-                  child: GestureDetector(
-                    onTap: () => playing ? audioProv.pause() : audioProv.play(),
+                return GestureDetector(
+                  onTap: () => playing ? audioProv.pause() : audioProv.play(),
+                  child: NeuBox(
                     child: Icon(
                       playing ? Icons.pause : Icons.play_arrow,
                       size: 30,
@@ -56,9 +55,9 @@ class MainPlayControls extends StatelessWidget {
 
           // Next
           Expanded(
-            child: NeuBox(
-              child: GestureDetector(
-                onTap: audioProv.hasNext ? () => audioProv.skipToNext() : null,
+            child: GestureDetector(
+              onTap: audioProv.hasNext ? () => audioProv.skipToNext() : null,
+              child: NeuBox(
                 child: Icon(
                   Icons.skip_next,
                   size: 30,
