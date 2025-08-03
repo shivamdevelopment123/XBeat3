@@ -29,19 +29,16 @@ class EqualizerBottomSheet extends StatelessWidget {
                     isExpanded: true,
                     value: eqProv.selectedPreset,
                     items: [
-                      // Built-in
                       ...builtins.map((n) => DropdownMenuItem(value: n, child: Text(n))),
                       if (users.isNotEmpty) const DropdownMenuItem(enabled: false, child: Divider()),
-                      // User
                       ...users.map((n) => DropdownMenuItem(value: n, child: Text(n))),
                       const DropdownMenuItem(enabled: false, child: Divider()),
-                      // Custom fallback
                       const DropdownMenuItem(value: 'Custom', child: Text('Custom')),
                     ],
                     onChanged: (v) {
                       if (v == null || v == 'Custom') return;
                       eqProv.applyPreset(v);
-                      audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                      audioProv.setEqualizer(eqProv.gains);
                     },
                   ),
                 ),
@@ -70,7 +67,7 @@ class EqualizerBottomSheet extends StatelessWidget {
                       );
                       if (name?.isNotEmpty ?? false) {
                         await eqProv.saveUserPreset(name!);
-                        audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                        audioProv.setEqualizer(eqProv.gains);
                       }
                     },
                   ),
@@ -92,14 +89,14 @@ class EqualizerBottomSheet extends StatelessWidget {
                       );
                       if (confirm == true) {
                         await eqProv.deleteUserPreset(eqProv.selectedPreset);
-                        audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                        audioProv.setEqualizer(eqProv.gains);
                       }
                     },
                   ),
                 TextButton(
                   onPressed: () {
                     eqProv.reset();
-                    audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                    audioProv.setEqualizer(eqProv.gains);
                   },
                   child: const Text('Reset'),
                 ),
@@ -113,7 +110,6 @@ class EqualizerBottomSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: EqualizerProvider.bands.map((freq) {
                 final gain = eqProv.gains[freq]!;
-                final q = eqProv.qFactors[freq]!;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -123,7 +119,7 @@ class EqualizerBottomSheet extends StatelessWidget {
                     // Gain slider
                     SizedBox(
                       width: 40,
-                      height: 200,
+                      height: 250,
                       child: RotatedBox(
                         quarterTurns: -1,
                         child: Slider(
@@ -133,29 +129,7 @@ class EqualizerBottomSheet extends StatelessWidget {
                           value: gain,
                           onChanged: (v) {
                             eqProv.setGain(freq, v);
-                            audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    // Q display
-                    Text('Q ${q.toStringAsFixed(1)}', style: const TextStyle(fontSize: 10)),
-                    const SizedBox(height: 6),
-                    // Q slider
-                    SizedBox(
-                      width: 30,
-                      height: 100,
-                      child: RotatedBox(
-                        quarterTurns: -1,
-                        child: Slider(
-                          min: 0.5,
-                          max: 5.0,
-                          divisions: 45,
-                          value: q,
-                          onChanged: (v) {
-                            eqProv.setQ(freq, v);
-                            audioProv.setEqualizer(eqProv.gains, eqProv.qFactors);
+                            audioProv.setEqualizer(eqProv.gains);
                           },
                         ),
                       ),
