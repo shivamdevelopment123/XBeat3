@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsUtils {
   static const _keyFolders = 'selected_folders';
+  static const _keySaveLastPlayedEnable = 'save_last_played_enabled';
 
   static Future<List<String>> getFolders() async {
     final prefs = await SharedPreferences.getInstance();
@@ -22,6 +23,15 @@ class PrefsUtils {
   static Future<String?> getLastPlayedSong() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('last_played_song');
+  }
+
+  static Future<void> setSaveLastPlayedEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keySaveLastPlayedEnable, enabled);
+  }
+  static Future<bool> getSaveLastPlayedEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keySaveLastPlayedEnable) ?? false;
   }
 
 }

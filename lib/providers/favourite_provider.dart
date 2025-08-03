@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -8,11 +9,22 @@ class FavouriteProvider extends ChangeNotifier {
 
   FavouriteProvider() {
     _box = Hive.box<String>(_boxName);
-    _loadFromBox();
+    _loadAndClean();
   }
 
-  void _loadFromBox() {
-    _favs.addAll(_box.keys.cast<String>());
+  Future<void> _loadAndClean() async {
+    final keys = _box.keys.cast<String>().toList();
+    _favs.clear();
+
+    for (final path in keys) {
+      final exists = await File(path).exists() || await Directory(path).exists();
+      if (exists) {
+        _favs.add(path);
+      } else {
+        await _box.delete(path);
+      }
+    }
+
     notifyListeners();
   }
 
@@ -28,6 +40,8 @@ class FavouriteProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> cleanUpMissing() => _loadAndClean();
 
   List<String> get allFavs => _favs.toList();
 }

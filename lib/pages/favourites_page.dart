@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:xbeat3/components/marque_scrolling_text.dart';
 import 'package:xbeat3/pages/player_page.dart';
 import '../components/mini_player_bar.dart';
 import '../models/audio_file.dart';
@@ -51,21 +50,9 @@ class FavouritesPage extends StatelessWidget {
 
           return ListTile(
             leading: const Icon(Icons.favorite, color: Colors.red),
-
             title: SizedBox(
-            height: 20,    // or whatever height fits your text
-            child: Marquee(
-              text: file.name,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              scrollAxis: Axis.horizontal,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              blankSpace: 50,                   // gap between repeats
-              velocity: 30.0,                   // pixels per second
-              pauseAfterRound: Duration(seconds: 1),
-              startPadding: 10,                 // padding at the start
-              accelerationDuration: Duration(seconds: 1),
-              decelerationDuration: Duration(seconds: 1),
-            ),
+            height: 20,
+            child: MarqueeText(text: file.name),
           ),
 
           onTap: () {
@@ -80,11 +67,15 @@ class FavouritesPage extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
+                  backgroundColor: Theme.of(context).colorScheme.background,
                   title: const Text('Remove Favourite'),
                   content: Text('Remove "${file.name}" from your favourites?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade600,
+                      ),
                       child: const Text('Cancel'),
                     ),
                     TextButton(
@@ -92,6 +83,9 @@ class FavouritesPage extends StatelessWidget {
                         favProv.toggle(songPath);
                         Navigator.pop(ctx);
                       },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
                       child: const Text('Remove'),
                     ),
                   ],
