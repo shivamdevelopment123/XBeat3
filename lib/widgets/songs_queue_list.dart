@@ -2,7 +2,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/audio_player_provider.dart';
 
 class SongsQueueList extends StatelessWidget {

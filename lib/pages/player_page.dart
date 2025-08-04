@@ -2,13 +2,13 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:xbeat3/components/neu_box.dart';
 import 'package:xbeat3/widgets/main_play_controls.dart';
+import 'package:xbeat3/widgets/middle_modification_controls.dart';
+import 'package:xbeat3/widgets/seekbar_time.dart';
 import 'package:xbeat3/widgets/songs_queue_list.dart';
-import '../components/equalizer_bottom_sheet.dart';
+import 'package:xbeat3/widgets/title_artist_playerpage.dart';
 import '../providers/audio_player_provider.dart';
-import '../providers/favourite_provider.dart';
 import '../widgets/song_info_sheet.dart';
 
 class PlayerPage extends StatelessWidget {
@@ -36,8 +36,6 @@ class PlayerPage extends StatelessWidget {
     final currentIndex = audioProv.currentIndex.clamp(0, seq.length - 1);
     final mediaItem = seq[currentIndex].tag as MediaItem;
     final songPath = mediaItem.id;
-    final favProv = context.watch<FavouriteProvider>();
-    final isFav = favProv.isFav(songPath);
 
     Widget buildArtWithInfo() {
       final item = seq[currentIndex].tag as MediaItem;
@@ -126,57 +124,8 @@ class PlayerPage extends StatelessWidget {
 
                       const SizedBox(height: 10),
 
-                      Row(
-                        children: [
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 240),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (player.sequence != null &&
-                                    audioProv.currentIndex <
-                                        player.sequence.length) ...[
-                                  Text(
-                                    (player.sequence[audioProv.currentIndex].tag
-                                            as MediaItem)
-                                        .title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: false,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    (player.sequence[audioProv.currentIndex].tag
-                                                as MediaItem)
-                                            .album ??
-                                        '',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: false,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            onPressed: () => favProv.toggle(songPath),
-                            icon: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Title & Artist
+                      TitleArtistPlayerpage(songPath: songPath),
+
                     ],
                   ),
                 ),
@@ -185,92 +134,11 @@ class PlayerPage extends StatelessWidget {
 
             const SizedBox(height: 15),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      audioProv.shuffle
-                          ? Icons.shuffle_outlined
-                          : Icons.shuffle_on_outlined,
-                    ),
-                    onPressed: () => audioProv.toggleShuffle(),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      audioProv.repeatMode == LoopMode.one
-                          ? Icons.repeat_one
-                          : audioProv.repeatMode == LoopMode.all
-                          ? Icons.repeat
-                          : Icons.repeat_on_outlined,
-                    ),
-                    onPressed: () => audioProv.cycleRepeatMode(),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.background,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(16),
-                          ),
-                        ),
-                        builder: (_) => const EqualizerBottomSheet(),
-                      );
-                    },
-                    icon: Icon(Icons.equalizer_outlined),
-                  ),
-                ],
-              ),
-            ),
+            MiddleModificationControls(),
 
             const SizedBox(height: 0),
 
-            // Seek bar + times
-            StreamBuilder<Duration>(
-              stream: player.positionStream,
-              builder: (context, snapshot) {
-                final pos = snapshot.data ?? Duration.zero;
-                final dur = player.duration ?? Duration.zero;
-                return Column(
-                  children: [
-                    SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        thumbShape: const RoundSliderThumbShape(
-                          enabledThumbRadius: 0,
-                        ),
-                      ),
-                      child: Slider(
-                        min: 0,
-                        max: dur.inMilliseconds.toDouble(),
-                        value: pos.inMilliseconds
-                            .clamp(0, dur.inMilliseconds)
-                            .toDouble(),
-                        onChanged: (ms) =>
-                            player.seek(Duration(milliseconds: ms.round())),
-                        activeColor: Colors.red,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_formatDuration(pos)),
-                          Text(_formatDuration(dur)),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+            SeekbarTime(),
 
             const SizedBox(height: 15),
 
@@ -283,12 +151,5 @@ class PlayerPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatDuration(Duration d) {
-    final twoDig = (int n) => n.toString().padLeft(2, '0');
-    final mins = twoDig(d.inMinutes.remainder(60));
-    final secs = twoDig(d.inSeconds.remainder(60));
-    return '$mins:$secs';
   }
 }
