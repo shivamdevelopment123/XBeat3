@@ -21,7 +21,6 @@ class MainActivity : AudioServiceActivity() {
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "setEQ" -> {
-                    // sessionId as Int, and gains as Map<String,Double>
                     val sessionId = (call.argument<Int>("sessionId") ?: 0)
                     val gains = call.argument<Map<String, Double>>("gains") ?: emptyMap()
                     initAndApplyEQ(sessionId, gains)
@@ -30,23 +29,20 @@ class MainActivity : AudioServiceActivity() {
                 else -> result.notImplemented()
             }
         }
+
     }
 
     private fun initAndApplyEQ(sessionId: Int, gains: Map<String, Double>) {
-        // Initialize Equalizer with (priority, audioSession as Int)
         if (equalizer == null) {
             equalizer = Equalizer(0, sessionId).apply { enabled = true }
         }
         val eq = equalizer!!
 
-        // Loop through all bands
         val bandCount = eq.numberOfBands.toInt()
         for (i in 0 until bandCount) {
             val bandIndex = i.toShort()
-            // centerFreq is in millihertz, so /1000 -> Hz string key
             val centerHzKey = (eq.getCenterFreq(bandIndex) / 1000).toInt().toString()
             gains[centerHzKey]?.let { gainDb ->
-                // Android expects levels in millibels (dB * 100)
                 val levelMb = (gainDb * 100).toInt().toShort()
                 eq.setBandLevel(bandIndex, levelMb)
             }

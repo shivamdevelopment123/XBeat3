@@ -22,6 +22,7 @@ class PlayerPage extends StatelessWidget {
 
     if (seq == null || seq.isEmpty) {
       return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
           title: const Text('N O W     P L A Y I N G'),
           centerTitle: true,
@@ -38,7 +39,7 @@ class PlayerPage extends StatelessWidget {
     final favProv = context.watch<FavouriteProvider>();
     final isFav = favProv.isFav(songPath);
 
-    Widget _buildArtWithInfo() {
+    Widget buildArtWithInfo() {
       final item = seq[currentIndex].tag as MediaItem;
       final uri = item.artUri;
       final songPath = item.id;
@@ -47,7 +48,10 @@ class PlayerPage extends StatelessWidget {
       if (uri != null && uri.scheme == 'file') {
         imageWidget = Image.file(File(uri.toFilePath()), fit: BoxFit.cover);
       } else if (uri != null && uri.scheme == 'asset') {
-        imageWidget = Image.asset(uri.path.replaceFirst('/', ''), fit: BoxFit.cover);
+        imageWidget = Image.asset(
+          uri.path.replaceFirst('/', ''),
+          fit: BoxFit.cover,
+        );
       } else {
         imageWidget = const Icon(Icons.music_note, size: 100);
       }
@@ -56,11 +60,7 @@ class PlayerPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: Stack(
           children: [
-            SizedBox(
-              width: double.infinity,
-              height: 240,
-              child: imageWidget,
-            ),
+            SizedBox(width: double.infinity, height: 240, child: imageWidget),
             Positioned(
               top: 8,
               right: 8,
@@ -122,8 +122,7 @@ class PlayerPage extends StatelessWidget {
                 child: NeuBox(
                   child: Column(
                     children: [
-                      //_buildArt(),
-                      _buildArtWithInfo(),
+                      buildArtWithInfo(),
 
                       const SizedBox(height: 10),
 
@@ -214,7 +213,9 @@ class PlayerPage extends StatelessWidget {
                       showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
-                        backgroundColor: Theme.of(context).colorScheme.background,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.background,
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(16),
@@ -278,7 +279,6 @@ class PlayerPage extends StatelessWidget {
             const SizedBox(height: 7),
 
             SongsQueueList(),
-
           ],
         ),
       ),

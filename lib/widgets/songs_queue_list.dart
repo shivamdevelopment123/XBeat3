@@ -54,6 +54,39 @@ class SongsQueueList extends StatelessWidget {
                   onTap: () {
                     audioProv.skipToQueueItem(actualIndex);
                   },
+                    onLongPress: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (ctx) {
+                          return SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.queue_play_next),
+                                  title: const Text('Play Next'),
+                                  onTap: () async {
+                                    Navigator.pop(ctx);
+                                    await audioProv.playNext(
+                                      mediaItem.id,
+                                      mediaItem,
+                                    );
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.delete),
+                                  title: const Text('Remove from Queue'),
+                                  onTap: () async {
+                                    Navigator.pop(ctx);
+                                    await audioProv.removeFromQueue(actualIndex);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }
                 );
               },
             );
