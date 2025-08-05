@@ -13,8 +13,9 @@ class SettingsPage extends StatelessWidget {
     final audioProv = context.watch<AudioPlayerProvider>();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('S E T T I N G S'),
         elevation: 1,
         centerTitle: true,
@@ -31,7 +32,7 @@ class SettingsPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.circular(10),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
                 children: [
                   Text(

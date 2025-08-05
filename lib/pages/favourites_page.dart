@@ -28,9 +28,9 @@ class FavouritesPage extends StatelessWidget {
     }).toList();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 1,
         title: const Text('F A V O U R I T E S'),
         centerTitle: true,
@@ -67,7 +67,7 @@ class FavouritesPage extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  backgroundColor: Theme.of(context).colorScheme.background,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   title: const Text('Remove Favourite'),
                   content: Text('Remove "${file.name}" from your favourites?'),
                   actions: [

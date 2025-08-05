@@ -41,7 +41,7 @@ class MiddleModificationControls extends StatelessWidget {
                 isScrollControlled: true,
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.background,
+                ).colorScheme.surface,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(
                     top: Radius.circular(16),

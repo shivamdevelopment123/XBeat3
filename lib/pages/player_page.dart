@@ -6,7 +6,6 @@ import 'package:xbeat3/components/neu_box.dart';
 import 'package:xbeat3/widgets/main_play_controls.dart';
 import 'package:xbeat3/widgets/middle_modification_controls.dart';
 import 'package:xbeat3/widgets/seekbar_time.dart';
-import 'package:xbeat3/widgets/songs_queue_list.dart';
 import 'package:xbeat3/widgets/title_artist_playerpage.dart';
 import '../providers/audio_player_provider.dart';
 import '../widgets/song_info_sheet.dart';
@@ -29,11 +28,11 @@ class _PlayerPageState extends State<PlayerPage> {
 
     if (seq == null || seq.isEmpty) {
       return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           title: const Text('N O W     P L A Y I N G'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -79,7 +78,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   icon: const Icon(Icons.info, color: Colors.white),
                   onPressed: () {
                     showModalBottomSheet(
-                      backgroundColor: Theme.of(context).colorScheme.background,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       context: context,
                       isScrollControlled: true,
                       builder: (_) => SongInfoSheet(
@@ -99,9 +98,9 @@ class _PlayerPageState extends State<PlayerPage> {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: BackButton(onPressed: () => Navigator.pop(context)),
         title: const Text('N O W      P L A Y I N G'),
@@ -171,7 +170,7 @@ class _PlayerPageState extends State<PlayerPage> {
                           },
                           onLongPress: () {
                             showModalBottomSheet(
-                              backgroundColor: Theme.of(context).colorScheme.background,
+                              backgroundColor: Theme.of(context).colorScheme.surface,
                               context: context,
                               builder: (ctx) {
                                 return SafeArea(

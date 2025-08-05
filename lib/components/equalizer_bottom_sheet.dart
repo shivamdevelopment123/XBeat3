@@ -4,7 +4,7 @@ import '../providers/equalizer_provider.dart';
 import '../providers/audio_player_provider.dart';
 
 class EqualizerBottomSheet extends StatelessWidget {
-  const EqualizerBottomSheet({Key? key}) : super(key: key);
+  const EqualizerBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

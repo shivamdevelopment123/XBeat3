@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 import 'package:xbeat3/components/marque_scrolling_text.dart';
 import 'package:xbeat3/components/my_drawer.dart';
@@ -21,20 +19,21 @@ class HomePage extends StatelessWidget {
     final raw = folderProv.currentPath ?? '';
     final display = raw.replaceFirst('/storage/emulated/0/', '');
 
-    void _confirmRemove(BuildContext context, String path) {
+    void confirmRemove(BuildContext context, String path) {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: const Text('Remove folder?'),
           content: Text('Delete "${path.split('/').last}" from your list?'),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600),)),
             TextButton(
               onPressed: () {
                 context.read<FolderProvider>().removeFolder(path);
                 Navigator.pop(context);
               },
-              child: const Text('Remove'),
+              child: Text('Remove', style: TextStyle(color: Colors.red)),
             ),
           ],
         ),
@@ -50,9 +49,9 @@ class HomePage extends StatelessWidget {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 1,
           title: Text(display.isEmpty ? 'Home' : display),
           actions: [
@@ -75,7 +74,7 @@ class HomePage extends StatelessWidget {
               ? ListView(
             children: folderProv.folders
                 .map((path) => GestureDetector(
-              onLongPress: () => _confirmRemove(context, path),
+              onLongPress: () => confirmRemove(context, path),
                   child: ListTile(
                               leading: const Icon(Icons.folder_shared),
                               title: Text(path.split('/').last),
