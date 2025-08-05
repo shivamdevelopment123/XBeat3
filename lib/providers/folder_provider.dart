@@ -106,6 +106,12 @@ class FolderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void refreshCurrentFolder() {
+    if (currentPath != null) {
+      openFolder(currentPath!);
+    }
+  }
+
   void goUp() {
     if (_currentPath != null) {
       final parent = Directory(_currentPath!).parent.path;

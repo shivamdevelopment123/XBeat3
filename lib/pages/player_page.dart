@@ -114,6 +114,7 @@ class _PlayerPageState extends State<PlayerPage> {
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(
+
                 child: GestureDetector(
                   onHorizontalDragEnd: (details) {
                     if (details.primaryVelocity! < 0) {
@@ -122,6 +123,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       if (audioProv.hasPrevious) audioProv.skipToPrevious();
                     }
                   },
+
                   child: NeuBox(
                     child: Column(
                       children: [
@@ -132,6 +134,7 @@ class _PlayerPageState extends State<PlayerPage> {
                     ),
                   ),
                 ),
+
               ),
             ),
             SliverToBoxAdapter(child: const SizedBox(height: 15)),
@@ -214,7 +217,6 @@ class _PlayerPageState extends State<PlayerPage> {
                 ),
               ),
             ),
-
           ],
         ),
       ),

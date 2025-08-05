@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:audio_service/audio_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_media_metadata/flutter_media_metadata.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:xbeat3/components/marque_scrolling_text.dart';
 import 'package:xbeat3/components/my_drawer.dart';
@@ -100,6 +103,117 @@ class HomePage extends StatelessWidget {
         .cast<File>()
         .toList();
 
+    void showFileOptions(File file, int index) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        builder: (_) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Wrap(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.delete_outline),
+                    title: const Text('Delete'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          backgroundColor:
+                          Theme.of(context).colorScheme.surface,
+                          title: const Text('Delete file?'),
+                          content: Text(
+                              'Are you sure you want to delete "${file.path.split('/').last}" from storage?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text('Cancel',
+                                  style: TextStyle(
+                                      color: Colors.grey.shade600)),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child:
+                              const Text('Delete', style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        try {
+                          await file.delete();
+                          folderProv.refreshCurrentFolder();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('File deleted')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to delete: $e')),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                  if (audioProv.isPlaying) ...[
+                    ListTile(
+                      leading: const Icon(Icons.queue_play_next),
+                      title: const Text('Play Next'),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final metadata =
+                        await MetadataRetriever.fromFile(file);
+                        final mediaItem = MediaItem(
+                          id: file.path,
+                          album: metadata.albumName ?? 'Unknown Album',
+                          title: metadata.trackName ?? file.path.split('/').last,
+                          artist: metadata.trackArtistNames?.join(', ') ??
+                              'Unknown Artist',
+                        );
+                        await audioProv.playNext(file.path, mediaItem);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Added to play next')),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.queue_music),
+                      title: const Text('Add to Queue'),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        final metadata =
+                        await MetadataRetriever.fromFile(file);
+                        final mediaItem = MediaItem(
+                          id: file.path,
+                          album: metadata.albumName ?? 'Unknown Album',
+                          title: metadata.trackName ?? file.path.split('/').last,
+                          artist: metadata.trackArtistNames?.join(', ') ??
+                              'Unknown Artist',
+                        );
+                        final playlist = audioProv.player.audioSource
+                        as ConcatenatingAudioSource;
+                        await playlist.add(AudioSource.uri(Uri.file(file.path),
+                            tag: mediaItem));
+                        audioProv.addToPlaylist(file.path);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Added to queue')),
+                        );
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return ListView.builder(
       itemCount: audioFiles.length,
       itemBuilder: (_, index) {
@@ -107,10 +221,10 @@ class HomePage extends StatelessWidget {
         final name = file.path.split('/').last;
         return ListTile(
           leading: const Icon(Icons.music_note),
-            title: SizedBox(
-              height: 20,
-              child: MarqueeText(text: name),
-            ),
+          title: SizedBox(
+            height: 20,
+            child: MarqueeText(text: name),
+          ),
           onTap: () async {
             final uris = audioFiles.map((f) => f.path).toList();
             audioProv.setPlaylist(uris, startIndex: index);
@@ -120,8 +234,10 @@ class HomePage extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const PlayerPage()),
             );
           },
+          onLongPress: () => showFileOptions(file, index),
         );
       },
     );
   }
+
 }

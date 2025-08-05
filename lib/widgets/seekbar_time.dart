@@ -32,10 +32,11 @@ class SeekbarTime extends StatelessWidget {
                 onChanged: (ms) =>
                     player.seek(Duration(milliseconds: ms.round())),
                 activeColor: Colors.red,
+                inactiveColor: Theme.of(context).colorScheme.secondary,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

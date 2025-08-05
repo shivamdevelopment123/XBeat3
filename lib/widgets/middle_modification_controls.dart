@@ -18,22 +18,22 @@ class MiddleModificationControls extends StatelessWidget {
         children: [
           IconButton(
             icon: Icon(
-              audioProv.shuffle
-                  ? Icons.shuffle_outlined
-                  : Icons.shuffle_on_outlined,
+              Icons.shuffle,
+              color: audioProv.shuffle ? Colors.red : Colors.grey,
             ),
             onPressed: () => audioProv.toggleShuffle(),
           ),
-          IconButton(
-            icon: Icon(
-              audioProv.repeatMode == LoopMode.one
-                  ? Icons.repeat_one
-                  : audioProv.repeatMode == LoopMode.all
-                  ? Icons.repeat
-                  : Icons.repeat_on_outlined,
-            ),
-            onPressed: () => audioProv.cycleRepeatMode(),
-          ),
+    IconButton(
+    icon: Icon(
+    audioProv.repeatMode == LoopMode.one
+    ? Icons.repeat_one
+        : Icons.repeat,
+    color: audioProv.repeatMode == LoopMode.off
+    ? Colors.grey
+        : Colors.red,
+    ),
+    onPressed: () => audioProv.cycleRepeatMode(),
+    ),
           IconButton(
             onPressed: () {
               showModalBottomSheet(
@@ -50,7 +50,7 @@ class MiddleModificationControls extends StatelessWidget {
                 builder: (_) => const EqualizerBottomSheet(),
               );
             },
-            icon: Icon(Icons.equalizer_outlined),
+            icon: Icon(Icons.equalizer_outlined, color: Colors.grey,),
           ),
         ],
       ),
