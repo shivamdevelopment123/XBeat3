@@ -1,4 +1,4 @@
-package com.sycodes.xbeat3
+package com.sentiant.xbeat3
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,7 +17,7 @@ class MainActivity : AudioServiceActivity() {
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            "com.sycodes.xbeat3/equalizer"
+            "com.sentiant.xbeat3/equalizer"
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "setEQ" -> {
@@ -51,7 +51,7 @@ class MainActivity : AudioServiceActivity() {
 
     private fun createQuietChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "com.sycodes.xbeat3.audio"
+            val channelId = "com.sentiant.xbeat3.audio"
             val channelName = "Audio Playback"
             val channel = NotificationChannel(
                 channelId,
@@ -60,7 +60,6 @@ class MainActivity : AudioServiceActivity() {
             ).apply {
                 setSound(null, null)
                 enableVibration(false)
-                // Use Notification.VISIBILITY_PUBLIC, not NotificationManager
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 setShowBadge(false)
             }

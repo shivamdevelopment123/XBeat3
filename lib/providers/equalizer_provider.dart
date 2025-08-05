@@ -5,10 +5,9 @@ import 'package:flutter/foundation.dart';
 import '../models/present_data.dart';
 
 class EqualizerProvider extends ChangeNotifier {
-  // Supported bands
+
   static const List<int> bands = [60, 230, 910, 3600, 14000];
 
-  // Friendly labels
   static const Map<int, String> bandLabels = {
     60: 'Sub-Bass (60 Hz)',
     230: 'Bass (230 Hz)',
@@ -17,15 +16,12 @@ class EqualizerProvider extends ChangeNotifier {
     14000: 'Treble (14 kHz)',
   };
 
-  // SharedPreferences keys
   static const String _gainsKey = 'equalizer_gains';
   static const String _presetKey = 'equalizer_selected_preset';
   static const String _userPresetsKey = 'equalizer_user_presets';
 
-  // Defaults
   static const double defaultGain = 0.0;
 
-  // Built-in presets (gain-only)
   static const Map<String, Map<int, double>> _builtInGains = {
     'Flat': {60: 0, 230: 0, 910: 0, 3600: 0, 14000: 0},
     'Pop': {60: -2, 230: -1, 910: 3, 3600: 1, 14000: -2},
@@ -46,26 +42,24 @@ class EqualizerProvider extends ChangeNotifier {
 
   EqualizerProvider() { _loadFromPrefs(); }
 
-  // Public getters
   Map<int, double> get gains => Map.from(_gains);
   String get selectedPreset => _selectedPreset;
   List<String> get builtInPresets => _builtInGains.keys.toList();
   List<String> get userPresetNames => userPresets.keys.toList();
   List<String> get allPresetNames => [...builtInPresets, ...userPresetNames, 'Custom'];
 
-  /// Load state from SharedPreferences
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    // Gains
+
     final gJson = prefs.getString(_gainsKey);
     if (gJson != null) {
       final map = Map<String, dynamic>.from(jsonDecode(gJson));
       _gains = { for (var e in map.entries) int.parse(e.key): (e.value as num).toDouble() };
     }
-    // Selected preset
+
     final preset = prefs.getString(_presetKey);
     if (preset != null) _selectedPreset = preset;
-    // User presets
+
     final uJson = prefs.getString(_userPresetsKey);
     if (uJson != null) {
       final map = Map<String, dynamic>.from(jsonDecode(uJson));
@@ -74,7 +68,6 @@ class EqualizerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Save state to SharedPreferences
   Future<void> _saveToPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_gainsKey, jsonEncode(_gains.map((k,v) => MapEntry(k.toString(), v))));
@@ -82,7 +75,6 @@ class EqualizerProvider extends ChangeNotifier {
     await prefs.setString(_userPresetsKey, jsonEncode(userPresets.map((k,v) => MapEntry(k, v.toJson()))));
   }
 
-  /// Adjust a single band gain
   void setGain(int freq, double db) {
     _gains[freq] = db;
     if (_selectedPreset != 'Custom') _selectedPreset = 'Custom';
@@ -90,7 +82,6 @@ class EqualizerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Reset to Flat
   void reset() {
     _gains = Map.from(_builtInGains['Flat']!);
     _selectedPreset = 'Flat';
@@ -98,7 +89,6 @@ class EqualizerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Apply a preset by name
   void applyPreset(String name) {
     if (_builtInGains.containsKey(name)) {
       _gains = Map.from(_builtInGains[name]!);
@@ -110,7 +100,6 @@ class EqualizerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Save current as named user preset
   Future<void> saveUserPreset(String name) async {
     userPresets[name] = PresetData(gains: Map.from(_gains));
     _selectedPreset = name;
@@ -118,7 +107,6 @@ class EqualizerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Delete a user preset
   Future<void> deleteUserPreset(String name) async {
     userPresets.remove(name);
     if (_selectedPreset == name) reset();

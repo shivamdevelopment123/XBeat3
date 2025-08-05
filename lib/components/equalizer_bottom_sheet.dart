@@ -122,15 +122,22 @@ class EqualizerBottomSheet extends StatelessWidget {
                       height: 250,
                       child: RotatedBox(
                         quarterTurns: -1,
-                        child: Slider(
-                          min: -12,
-                          max: 12,
-                          divisions: 48,
-                          value: gain,
-                          onChanged: (v) {
-                            eqProv.setGain(freq, v);
-                            audioProv.setEqualizer(eqProv.gains);
-                          },
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            inactiveTrackColor: Theme.of(context).colorScheme.secondary,
+                            overlayColor: Colors.red.withOpacity(0.4),
+                            trackHeight: 4,
+                          ),
+                          child: Slider(
+                            min: -12,
+                            max: 12,
+                            divisions: 48,
+                            value: gain,
+                            onChanged: (v) {
+                              eqProv.setGain(freq, v);
+                              audioProv.setEqualizer(eqProv.gains);
+                            },
+                          ),
                         ),
                       ),
                     ),

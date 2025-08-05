@@ -12,14 +12,27 @@ class MiniPlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioProv = context.watch<AudioPlayerProvider>();
-    final player    = audioProv.player;
+    final player = audioProv.player;
 
-    if (player.sequence == null || player.sequence!.isEmpty) {
+    // Early return if no sequence or empty
+    final sequence = player.sequence;
+    if (sequence == null || sequence.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final mediaItem = player.sequence![audioProv.currentIndex].tag as MediaItem;
-    final title = mediaItem.title;
+    // Ensure currentIndex is valid
+    final currentIndex = audioProv.currentIndex;
+    if (currentIndex == null || currentIndex < 0 || currentIndex >= sequence.length) {
+      return const SizedBox.shrink();
+    }
+
+    // Safely get mediaItem from tag
+    final tag = sequence[currentIndex].tag;
+    if (tag is! MediaItem) {
+      return const SizedBox.shrink();
+    }
+
+    final title = tag.title;
 
     return GestureDetector(
       onTap: () {
@@ -55,11 +68,10 @@ class MiniPlayerBar extends StatelessWidget {
                 stream: player.playingStream,
                 initialData: player.playing,
                 builder: (context, snap) {
-                  final playing = snap.data!;
+                  final playing = snap.data ?? false;
                   return IconButton(
                     icon: Icon(playing ? Icons.pause : Icons.play_arrow),
-                    onPressed: () =>
-                    playing ? audioProv.pause() : audioProv.play(),
+                    onPressed: playing ? audioProv.pause : audioProv.play,
                   );
                 },
               ),

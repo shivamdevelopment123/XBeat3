@@ -52,7 +52,6 @@ class FolderProvider extends ChangeNotifier {
     Future<void> scanDir(Directory dir) async {
       final path = dir.path;
 
-      // Skip restricted & hidden folders
       if (restrictedDirs.any((b) => path.startsWith(b)) ||
           path.split('/').any((segment) => segment.startsWith('.'))) {
         return;

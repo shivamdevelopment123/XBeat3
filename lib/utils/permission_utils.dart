@@ -2,44 +2,54 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionUtils {
-  static Future<bool> requestStoragePermissions() async {
+  static Future<bool> requestAllPermissions() async {
     if (Platform.isAndroid) {
-      final statuses = await [
+      final requiredPermissions = [
         Permission.manageExternalStorage,
         Permission.audio,
-      ].request();
+        Permission.notification,
+      ];
 
-      return statuses.values.any((s) => s.isGranted);
-    } else if (Platform.isIOS) {
-      final status = await Permission.mediaLibrary.request();
+      // Filter out already granted permissions
+      final toRequest = <Permission>[];
+      for (final perm in requiredPermissions) {
+        if (!await perm.isGranted) {
+          toRequest.add(perm);
+        }
+      }
+
+      // If everything is already granted
+      if (toRequest.isEmpty) return true;
+
+      // Request only the missing ones
+      final statuses = await toRequest.request();
+
+      // If any permission is permanently denied
+      if (statuses.values.any((s) => s.isPermanentlyDenied)) {
+        await openAppSettings();
+        return false;
+      }
+
+      // Return true if all requested are granted
+      return statuses.values.every((s) => s.isGranted);
+    }
+
+    if (Platform.isIOS) {
+      final mediaLib = Permission.mediaLibrary;
+
+      if (await mediaLib.isGranted) return true;
+
+      final status = await mediaLib.request();
+      if (status.isPermanentlyDenied) {
+        await openAppSettings();
+        return false;
+      }
+
       return status.isGranted;
     }
+
     return false;
   }
-
-  static Future<void> handlePermanentDenial() async {
-    if (Platform.isAndroid) {
-
-      if (await Permission.manageExternalStorage.isPermanentlyDenied ||
-          await Permission.audio.isPermanentlyDenied) {
-        await openAppSettings();
-      }
-    } else if (Platform.isIOS) {
-      if (await Permission.mediaLibrary.isPermanentlyDenied) {
-        await openAppSettings();
-      }
-    }
-  }
-
-
 }
 
-Future<void> requestNotificationPermission() async {
-  if (Platform.isAndroid) {
-    if (await Permission.notification.isDenied ||
-        await Permission.notification.isPermanentlyDenied) {
-      await Permission.notification.request();
-    }
-  }
-}
 

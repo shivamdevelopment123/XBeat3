@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsUtils {
@@ -22,8 +22,14 @@ class PrefsUtils {
   }
 
   static Future<String?> getLastPlayedSong() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('last_played_song');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final value = prefs.getString('last_played_song');
+      return (value == null || value.isEmpty) ? null : value;
+    } catch (e, s) {
+      debugPrint("Error loading last played song: $e\n$s");
+      return null; // Fallback if prefs fails
+    }
   }
 
   static Future<void> setSaveLastPlayedEnabled(bool enabled) async {

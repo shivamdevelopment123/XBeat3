@@ -13,7 +13,8 @@ class MyDrawer extends StatelessWidget {
       child: Column(
         children: [
           DrawerHeader(child: Center(
-            child: Icon(Icons.music_note_rounded, size: 50, color: Theme.of(context).colorScheme.primary,),
+            child: Image.asset('assets/images/launchericon.png',)
+
           )
           ),
           Padding(
