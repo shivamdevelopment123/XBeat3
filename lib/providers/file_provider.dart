@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-
 import '../models/audio_file.dart';
 
 class FileProvider extends ChangeNotifier {

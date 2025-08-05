@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xbeat3/themes/theme_provider.dart';
-
 import '../providers/audio_player_provider.dart';
+import '../providers/folder_provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -11,6 +11,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProv = context.watch<ThemeProvider>();
     final audioProv = context.watch<AudioPlayerProvider>();
+    final folderProv = context.watch<FolderProvider>();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -26,7 +27,6 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.secondary,
@@ -47,7 +47,9 @@ class SettingsPage extends StatelessWidget {
                   DropdownButton<ThemeMode>(
                     value: themeProv.themeMode,
                     dropdownColor: Theme.of(context).colorScheme.secondary,
-                    iconEnabledColor: Theme.of(context).colorScheme.inversePrimary,
+                    iconEnabledColor: Theme.of(
+                      context,
+                    ).colorScheme.inversePrimary,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.inversePrimary,
                       fontSize: 16,
@@ -98,10 +100,34 @@ class SettingsPage extends StatelessWidget {
                 onChanged: audioProv.setSaveLastPlayedEnabled,
               ),
             ),
+
+            const SizedBox(height: 16),
+
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  "Auto Fetch Audio Files",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                value: folderProv.autoFetchEnabled,
+                onChanged: (val) {
+                  folderProv.setAutoFetchEnabled(val);
+                },
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-

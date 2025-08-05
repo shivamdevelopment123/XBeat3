@@ -93,7 +93,6 @@ class HomePage extends StatelessWidget {
   Widget _buildFileList(BuildContext context,
       FolderProvider folderProv, AudioPlayerProvider audioProv) {
     final allEntities = folderProv.items;
-    // Filter only audio files
     final audioFiles = allEntities
         .where((e) =>
     e is File &&

@@ -14,6 +14,7 @@ import 'package:xbeat3/themes/dark_mode.dart';
 import 'package:xbeat3/themes/light_mode.dart';
 import 'package:xbeat3/themes/theme_provider.dart';
 import 'package:xbeat3/utils/permission_utils.dart';
+import 'package:xbeat3/utils/prefrences_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,6 +97,15 @@ class _PermissionsGateState extends State<PermissionsGate> {
     } else {
       setState(() => _hasPermission = true);
       context.read<FileProvider>().fetchFiles();
+
+      final autoFetchEnabled = await PrefsUtils.getAutoFetchAudioEnabled();
+      if (autoFetchEnabled) {
+        if (kDebugMode) {
+          print("Auto fetch enabled - starting scan");
+        }
+        final folderProv = context.read<FolderProvider>();
+        await folderProv.autoFetchAudioFolders();
+      }
     }
   }
 
