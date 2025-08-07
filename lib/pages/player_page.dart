@@ -18,8 +18,33 @@ class PlayerPage extends StatefulWidget {
   State<PlayerPage> createState() => _PlayerPageState();
 }
 
-class _PlayerPageState extends State<PlayerPage> {
+class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
+
+  late AnimationController _transitionController;
+  late Animation<Offset> _slideAnimation;
+  bool _isSwipeLeft = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _transitionController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset.zero, // will be updated before animation
+    ).animate(CurvedAnimation(parent: _transitionController, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _transitionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +52,13 @@ class _PlayerPageState extends State<PlayerPage> {
     final player = audioProv.player;
     final seq = player.sequence;
 
-    // If no sequence, show loading UI
     if (seq == null || seq.isEmpty) {
       return _buildEmptyState(context);
     }
 
-    // Ensure valid index
     final rawIndex = audioProv.currentIndex ?? 0;
     final currentIndex = rawIndex.clamp(0, seq.length - 1);
 
-    // Safely extract current media item
     final tag = seq[currentIndex].tag;
     if (tag is! MediaItem) {
       return _buildEmptyState(context);
@@ -65,21 +87,43 @@ class _PlayerPageState extends State<PlayerPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverToBoxAdapter(
                 child: GestureDetector(
-                  onHorizontalDragEnd: (details) {
-                    if (details.primaryVelocity == null) return;
-                    if (details.primaryVelocity! < 0 && audioProv.hasNext) {
-                      audioProv.skipToNext();
-                    } else if (details.primaryVelocity! > 0 && audioProv.hasPrevious) {
-                      audioProv.skipToPrevious();
-                    }
-                  },
-                  child: NeuBox(
-                    child: Column(
-                      children: [
-                        _buildArtWithInfo(context, tag),
-                        const SizedBox(height: 10),
-                        TitleArtistPlayerpage(songPath: songPath),
-                      ],
+                    onHorizontalDragEnd: (details) async {
+                      if (details.primaryVelocity == null) return;
+
+                      if (details.primaryVelocity! < 0 && audioProv.hasNext) {
+                        // Swipe left
+                        setState(() => _isSwipeLeft = true);
+                        _slideAnimation = Tween<Offset>(
+                          begin: Offset.zero,
+                          end: const Offset(-1.0, 0),
+                        ).animate(CurvedAnimation(parent: _transitionController, curve: Curves.easeInOut));
+
+                        await _transitionController.forward(from: 0);
+                        audioProv.skipToNext();
+                        _transitionController.reset();
+                      } else if (details.primaryVelocity! > 0 && audioProv.hasPrevious) {
+                        // Swipe right
+                        setState(() => _isSwipeLeft = false);
+                        _slideAnimation = Tween<Offset>(
+                          begin: Offset.zero,
+                          end: const Offset(1.0, 0),
+                        ).animate(CurvedAnimation(parent: _transitionController, curve: Curves.easeInOut));
+
+                        await _transitionController.forward(from: 0);
+                        audioProv.skipToPrevious();
+                        _transitionController.reset();
+                      }
+                    },
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: NeuBox(
+                      child: Column(
+                        children: [
+                          _buildArtWithInfo(context, tag),
+                          const SizedBox(height: 10),
+                          TitleArtistPlayerpage(songPath: songPath),
+                        ],
+                      ),
                     ),
                   ),
                 ),
