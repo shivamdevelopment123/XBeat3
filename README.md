@@ -44,20 +44,14 @@ git clone https://github.com/shivamdevelopment123/XBeat3.git
 cd xbeat3
 flutter pub get
 flutter run
-
----
+```
 
 ## 🛠️ Tech Stack
-Flutter – Cross-platform UI toolkit
-
-just_audio – Advanced audio playback
-
-custom build equalizer solution
-
-google_fonts, flutter_svg – UI enhancements
-
-(Include state management library: Provider)
-Flutter & Dart community
+- Flutter – Cross-platform UI toolkit
+- just_audio – Advanced audio playback
+- custom build equalizer solution
+- google_fonts, flutter_svg – UI enhancements
+- (Include state management library: Provider)
 
 ---
 
